@@ -1,6 +1,6 @@
 # Mini-Dungeon-Browser-Based-Adventure-Game
 <h3>View Live Page</h3>
-Visit <a href="[https://bee-create.github.io/QuestBoard-Interactive-Task-Management-App/](https://bee-create.github.io/Mini-Dungeon-Browser-Based-Adventure-Game/)">my live page</a> to see the code perform.<br>
+Visit <a href="https://bee-create.github.io/Mini-Dungeon-Browser-Based-Adventure-Game/">my live page</a> to see the code perform.<br>
 <h3>Purpose of This Project</h3>
 Mini Dungeon is an interactive browser-based adventure game built with HTML, CSS, and vanilla JavaScript. Players explore a mysterious dungeon, encounter randomly generated enemies, collect treasure, use healing potions, and battle a final boss.<br>
 <br>
