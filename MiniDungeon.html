@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore a mysterious dungeon, battle monsters, and collect treasure in Mini Dungeon.">
+  <title>Mini Dungeon | A JavaScript Adventure</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#" aria-label="Mini Dungeon home">
+      <span aria-hidden="true">⚔</span> MINI DUNGEON
+    </a>
+    <span class="header-label">A MINI ADVENTURE</span>
+  </header>
+
+  <main class="game-container">
+    <section class="intro">
+      <p class="eyebrow">YOUR ADVENTURE BEGINS HERE</p>
+      <h1>Enter the <span>Dungeon.</span></h1>
+      <p>Dark halls. Dangerous creatures. Treasures waiting to be found.</p>
+    </section>
+
+    <section class="game-layout" aria-label="Dungeon game">
+      <aside class="panel player-panel">
+        <div class="panel-heading">
+          <h2>Adventurer</h2>
+          <span class="status-dot" aria-hidden="true"></span>
+        </div>
+
+        <div class="avatar" aria-hidden="true">🧙</div>
+        <p class="player-title">Dungeon Explorer</p>
+
+        <div class="stat">
+          <div class="stat-label">
+            <span>Health</span>
+            <strong id="health-text">30 / 30</strong>
+          </div>
+          <div class="meter">
+            <div class="meter-fill health-fill" id="health-bar"></div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="mini-stat">
+            <span class="mini-stat-icon" aria-hidden="true">🪙</span>
+            <span class="mini-stat-label">Gold</span>
+            <strong id="gold-text">0</strong>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-icon" aria-hidden="true">🧪</span>
+            <span class="mini-stat-label">Potions</span>
+            <strong id="potion-text">3</strong>
+          </div>
+        </div>
+
+        <div class="inventory">
+          <h3>Inventory</h3>
+          <p id="inventory-text">Your bag is waiting for treasure.</p>
+        </div>
+      </aside>
+
+      <section class="panel adventure-panel">
+        <div class="panel-heading">
+          <h2>Dungeon Log</h2>
+          <span class="room-badge" id="room-text">Room 1 / 8</span>
+        </div>
+
+        <div class="scene" id="scene">
+          <span class="scene-icon" id="scene-icon" aria-hidden="true">🏰</span>
+          <p class="scene-label" id="scene-label">THE ENTRANCE</p>
+          <h3 id="scene-title">The dungeon awaits.</h3>
+          <p id="scene-description">
+            Take a breath, check your supplies, and begin your journey.
+          </p>
+        </div>
+
+        <div class="enemy-card" id="enemy-card" hidden>
+          <div>
+            <p class="eyebrow">HOSTILE CREATURE</p>
+            <h3 id="enemy-name">Dungeon Monster</h3>
+          </div>
+          <span class="enemy-icon" id="enemy-icon" aria-hidden="true">👹</span>
+          <div class="stat enemy-health">
+            <div class="stat-label">
+              <span>Enemy health</span>
+              <strong id="enemy-health-text">10 / 10</strong>
+            </div>
+            <div class="meter">
+              <div class="meter-fill enemy-fill" id="enemy-health-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="button button-primary" id="explore-btn">
+            <span aria-hidden="true">🗝️</span> Explore
+          </button>
+          <button class="button button-danger" id="attack-btn" hidden>
+            <span aria-hidden="true">⚔️</span> Attack
+          </button>
+          <button class="button button-secondary" id="potion-btn">
+            <span aria-hidden="true">🧪</span> Use Potion
+          </button>
+          <button class="button button-secondary" id="flee-btn" hidden>
+            Retreat
+          </button>
+          <button class="button button-secondary" id="restart-btn" hidden>
+            Play Again
+          </button>
+        </div>
+
+        <p class="action-hint" id="action-hint">
+          Choose Explore to discover what's hidden in the dungeon.
+        </p>
+
+        <div class="log-section">
+          <div class="log-heading">
+            <h3>Adventure Journal</h3>
+            <span>RECENT EVENTS</span>
+          </div>
+          <ol class="event-log" id="event-log" aria-live="polite">
+            <li class="log-entry">Your adventure is about to begin.</li>
+          </ol>
+        </div>
+      </section>
+    </section>
+
+    <footer class="game-footer">
+      <p>Built with HTML, CSS, and JavaScript.</p>
+      <p>Stay sharp, adventurer. 🖤</p>
+    </footer>
+  </main>
+</body>
+</html>
