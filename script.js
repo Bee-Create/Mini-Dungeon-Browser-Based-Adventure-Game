@@ -1,18 +1,43 @@
-"use strict";
+="use strict";
 
-// ===== Game settings =====
+// ===== Constants =====
 const MAX_HEALTH = 30;
 const FINAL_ROOM = 8;
 const POTION_HEAL = 12;
 
+// ===== Enemies =====
 const enemies = [
-  { name: "Cave Goblin", icon: "👺", health: 10, damage: 4, gold: 5 },
-  { name: "Skeleton Guard", icon: "💀", health: 12, damage: 5, gold: 7 },
-  { name: "Shadow Beast", icon: "👹", health: 15, damage: 6, gold: 9 },
-  { name: "Cursed Knight", icon: "🛡️", health: 18, damage: 7, gold: 12 }
+  {
+    name: "Cave Goblin",
+    icon: "👺",
+    health: 10,
+    damage: 4,
+    gold: 5
+  },
+  {
+    name: "Skeleton Guard",
+    icon: "💀",
+    health: 12,
+    damage: 5,
+    gold: 7
+  },
+  {
+    name: "Shadow Beast",
+    icon: "👹",
+    health: 15,
+    damage: 6,
+    gold: 9
+  },
+  {
+    name: "Cursed Knight",
+    icon: "🛡️",
+    health: 18,
+    damage: 7,
+    gold: 12
+  }
 ];
 
-const bossTemplate = {
+const boss = {
   name: "The Dungeon Overlord",
   icon: "🐉",
   health: 28,
@@ -21,44 +46,44 @@ const bossTemplate = {
   isBoss: true
 };
 
-// ===== Player and game state =====
+// ===== Game State =====
 let player;
 let currentEnemy;
 let gameOver;
 let victory;
 let eventHistory;
 
-// ===== HTML elements =====
+// ===== Elements =====
 const elements = {
-  healthText: document.querySelector("#health-text"),
-  healthBar: document.querySelector("#health-bar"),
-  goldText: document.querySelector("#gold-text"),
-  potionText: document.querySelector("#potion-text"),
-  inventoryText: document.querySelector("#inventory-text"),
-  roomText: document.querySelector("#room-text"),
+  healthText: document.getElementById("health-text"),
+  healthBar: document.getElementById("health-bar"),
+  goldText: document.getElementById("gold-text"),
+  potionText: document.getElementById("potion-text"),
+  inventoryText: document.getElementById("inventory-text"),
+  roomText: document.getElementById("room-text"),
 
-  sceneIcon: document.querySelector("#scene-icon"),
-  sceneLabel: document.querySelector("#scene-label"),
-  sceneTitle: document.querySelector("#scene-title"),
-  sceneDescription: document.querySelector("#scene-description"),
+  sceneIcon: document.getElementById("scene-icon"),
+  sceneLabel: document.getElementById("scene-label"),
+  sceneTitle: document.getElementById("scene-title"),
+  sceneDescription: document.getElementById("scene-description"),
 
-  enemyCard: document.querySelector("#enemy-card"),
-  enemyName: document.querySelector("#enemy-name"),
-  enemyIcon: document.querySelector("#enemy-icon"),
-  enemyHealthText: document.querySelector("#enemy-health-text"),
-  enemyHealthBar: document.querySelector("#enemy-health-bar"),
+  enemyCard: document.getElementById("enemy-card"),
+  enemyName: document.getElementById("enemy-name"),
+  enemyIcon: document.getElementById("enemy-icon"),
+  enemyHealthText: document.getElementById("enemy-health-text"),
+  enemyHealthBar: document.getElementById("enemy-health-bar"),
 
-  exploreButton: document.querySelector("#explore-btn"),
-  attackButton: document.querySelector("#attack-btn"),
-  potionButton: document.querySelector("#potion-btn"),
-  fleeButton: document.querySelector("#flee-btn"),
-  restartButton: document.querySelector("#restart-btn"),
+  exploreButton: document.getElementById("explore-btn"),
+  attackButton: document.getElementById("attack-btn"),
+  potionButton: document.getElementById("potion-btn"),
+  fleeButton: document.getElementById("flee-btn"),
+  restartButton: document.getElementById("restart-btn"),
 
-  actionHint: document.querySelector("#action-hint"),
-  eventLog: document.querySelector("#event-log")
+  actionHint: document.getElementById("action-hint"),
+  eventLog: document.getElementById("event-log")
 };
 
-// ===== Game setup =====
+// ===== Initialize =====
 function startGame() {
   player = {
     health: MAX_HEALTH,
@@ -77,16 +102,16 @@ function startGame() {
     "🏰",
     "THE ENTRANCE",
     "The dungeon awaits.",
-    "Take a breath, check your supplies, and begin your journey."
+    "Take a breath, check your supplies and begin your adventure."
   );
 
-  addLog("Your adventure begins at the dungeon entrance.");
-  addLog("You packed 3 healing potions. Make them count.");
+  addLog("Your adventure begins.");
+  addLog("You packed 3 healing potions.");
 
   renderGame();
 }
 
-// ===== Interface updates =====
+// ===== Scene =====
 function updateScene(icon, label, title, description) {
   elements.sceneIcon.textContent = icon;
   elements.sceneLabel.textContent = label;
@@ -94,86 +119,111 @@ function updateScene(icon, label, title, description) {
   elements.sceneDescription.textContent = description;
 }
 
+// ===== Journal =====
 function addLog(message) {
   eventHistory.unshift(message);
-  eventHistory = eventHistory.slice(0, 8);
 
-  elements.eventLog.replaceChildren();
+  if (eventHistory.length > 8) {
+    eventHistory.pop();
+  }
+
+  elements.eventLog.innerHTML = "";
 
   eventHistory.forEach((entry) => {
-    const item = document.createElement("li");
-    item.className = "log-entry";
-    item.textContent = entry;
-    elements.eventLog.append(item);
+    const li = document.createElement("li");
+    li.className = "log-entry";
+    li.textContent = entry;
+    elements.eventLog.appendChild(li);
   });
 }
 
+// ===== UI =====
 function renderGame() {
-  const healthPercent = (player.health / MAX_HEALTH) * 100;
+  const healthPercent =
+    (player.health / MAX_HEALTH) * 100;
 
   elements.healthText.textContent =
     `${player.health} / ${MAX_HEALTH}`;
 
-  elements.healthBar.style.width = `${healthPercent}%`;
-  elements.healthBar.style.background =
-    healthPercent <= 30 ? "#f07886" :
-    healthPercent <= 60 ? "#f3ca77" : "#71d6a0";
+  elements.healthBar.style.width =
+    `${healthPercent}%`;
 
   elements.goldText.textContent = player.gold;
   elements.potionText.textContent = player.potions;
+
   elements.roomText.textContent =
     `Room ${player.room} / ${FINAL_ROOM}`;
 
-  const inventoryItems = [];
+  const inventory = [];
 
   if (player.treasures > 0) {
-    inventoryItems.push(`💎 Treasures found: ${player.treasures}`);
+    inventory.push(
+      `💎 Treasures: ${player.treasures}`
+    );
   }
 
-  if (player.potions > 0) {
-    inventoryItems.push(`🧪 Healing potions: ${player.potions}`);
-  }
+  inventory.push(
+    `🧪 Potions: ${player.potions}`
+  );
 
-  elements.inventoryText.textContent = inventoryItems.length
-    ? inventoryItems.join(" • ")
-    : "Your bag is empty. Keep exploring!";
-
-  elements.enemyCard.hidden = !currentEnemy;
+  elements.inventoryText.textContent =
+    inventory.join(" • ");
 
   if (currentEnemy) {
-    const enemyPercent =
-      (currentEnemy.health / currentEnemy.maxHealth) * 100;
+    elements.enemyCard.hidden = false;
 
-    elements.enemyName.textContent = currentEnemy.name;
-    elements.enemyIcon.textContent = currentEnemy.icon;
+    const enemyPercent =
+      (currentEnemy.health /
+        currentEnemy.maxHealth) *
+      100;
+
+    elements.enemyName.textContent =
+      currentEnemy.name;
+
+    elements.enemyIcon.textContent =
+      currentEnemy.icon;
+
     elements.enemyHealthText.textContent =
       `${currentEnemy.health} / ${currentEnemy.maxHealth}`;
-    elements.enemyHealthBar.style.width = `${enemyPercent}%`;
+
+    elements.enemyHealthBar.style.width =
+      `${enemyPercent}%`;
+  } else {
+    elements.enemyCard.hidden = true;
   }
 
-  elements.exploreButton.hidden = Boolean(currentEnemy) || gameOver;
-  elements.attackButton.hidden = !currentEnemy || gameOver;
+  elements.exploreButton.hidden =
+    currentEnemy || gameOver;
+
+  elements.attackButton.hidden =
+    !currentEnemy || gameOver;
+
   elements.fleeButton.hidden =
-    !currentEnemy || gameOver || currentEnemy.isBoss;
-  elements.potionButton.hidden = gameOver;
-  elements.restartButton.hidden = !gameOver;
+    !currentEnemy ||
+    gameOver ||
+    currentEnemy?.isBoss;
+
+  elements.restartButton.hidden =
+    !gameOver;
+
+  elements.potionButton.hidden =
+    gameOver;
 
   elements.potionButton.disabled =
-    player.potions <= 0 || player.health === MAX_HEALTH;
+    player.potions <= 0 ||
+    player.health >= MAX_HEALTH;
 
   if (gameOver) {
-    elements.actionHint.textContent = victory
-      ? "You conquered the dungeon! Start a new adventure?"
-      : "Your adventure has ended. Ready to try again?";
-
-    elements.statusDot?.classList?.add("inactive");
+    elements.actionHint.textContent =
+      victory
+        ? "You conquered the dungeon!"
+        : "Your adventure has ended.";
   } else if (currentEnemy) {
-    elements.actionHint.textContent = currentEnemy.isBoss
-      ? "This is the final battle. Defeat the Overlord to win!"
-      : "Fight back, use a potion, or retreat to survive.";
+    elements.actionHint.textContent =
+      "Fight, use a potion, or retreat.";
   } else {
     elements.actionHint.textContent =
-      "Explore to discover the next room. Keep an eye on your health.";
+      "Explore the dungeon.";
   }
 }
 
@@ -186,29 +236,32 @@ function explore() {
   }
 
   if (player.room === FINAL_ROOM) {
-    beginBossFight();
+    startBossFight();
     return;
   }
 
   const roll = Math.random();
 
   if (roll < 0.45) {
-    beginRandomFight();
-  } else if (roll < 0.70) {
+    startFight();
+  } else if (roll < 0.7) {
     findTreasure();
   } else if (roll < 0.85) {
     findPotion();
   } else {
-    findQuietRoom();
+    findSafeRoom();
   }
 
   renderGame();
 }
 
-function beginRandomFight() {
-  const template = enemies[
-    Math.floor(Math.random() * enemies.length)
-  ];
+function startFight() {
+  const template =
+    enemies[
+      Math.floor(
+        Math.random() * enemies.length
+      )
+    ];
 
   currentEnemy = {
     ...template,
@@ -219,43 +272,51 @@ function beginRandomFight() {
     "⚠️",
     "ENCOUNTER",
     `${currentEnemy.name} appears!`,
-    "A hostile creature blocks your path. Choose your next move carefully."
+    "A monster blocks your path."
   );
 
-  addLog(`${currentEnemy.name} blocks your path!`);
+  addLog(
+    `${currentEnemy.name} appears!`
+  );
 }
 
-function beginBossFight() {
+function startBossFight() {
   currentEnemy = {
-    ...bossTemplate,
-    maxHealth: bossTemplate.health
+    ...boss,
+    maxHealth: boss.health
   };
 
   updateScene(
     "🐉",
     "FINAL ROOM",
     "The Overlord awakens!",
-    "You've reached the heart of the dungeon. Defeat the Overlord to claim victory."
+    "Defeat the Overlord to win."
   );
 
-  addLog("The Dungeon Overlord emerges for the final battle!");
+  addLog(
+    "The Dungeon Overlord appears!"
+  );
+
   renderGame();
 }
 
 function findTreasure() {
-  const reward = Math.floor(Math.random() * 11) + 5;
+  const reward =
+    Math.floor(Math.random() * 11) + 5;
 
   player.gold += reward;
   player.treasures++;
 
   updateScene(
     "💎",
-    "TREASURE FOUND",
-    "A hidden treasure!",
-    `You discover a stash containing ${reward} gold coins. Not a bad find!`
+    "TREASURE",
+    "Hidden Treasure!",
+    `You found ${reward} gold.`
   );
 
-  addLog(`You found treasure and collected ${reward} gold.`);
+  addLog(
+    `You found ${reward} gold.`
+  );
 }
 
 function findPotion() {
@@ -264,41 +325,52 @@ function findPotion() {
   updateScene(
     "🧪",
     "SUPPLY CACHE",
-    "A healing potion!",
-    "You discover a potion tucked away in the shadows. Add it to your supplies."
+    "Potion Found!",
+    "You found a healing potion."
   );
 
-  addLog("You found a healing potion.");
+  addLog(
+    "You found a healing potion."
+  );
 }
 
-function findQuietRoom() {
-  const healing = Math.min(5, MAX_HEALTH - player.health);
-  player.health += healing;
+function findSafeRoom() {
+  const heal =
+    Math.min(
+      5,
+      MAX_HEALTH - player.health
+    );
+
+  player.health += heal;
 
   updateScene(
     "🕯️",
     "SAFE ROOM",
-    "A moment of peace.",
-    healing > 0
-      ? `The room is quiet. You rest and recover ${healing} health.`
-      : "The room is quiet, but you're already at full health. Time to move on."
+    "A quiet room.",
+    heal > 0
+      ? `Recovered ${heal} health.`
+      : "Already fully healed."
   );
 
   addLog(
-    healing > 0
-      ? `You rested and recovered ${healing} health.`
-      : "You found a quiet room and caught your breath."
+    heal > 0
+      ? `Recovered ${heal} health.`
+      : "You rested."
   );
 }
 
 // ===== Combat =====
 function attack() {
-  if (gameOver || !currentEnemy) return;
+  if (!currentEnemy || gameOver) return;
 
-  const damage = Math.floor(Math.random() * 5) + 4;
-  currentEnemy.health = Math.max(0, currentEnemy.health - damage);
+  const damage =
+    Math.floor(Math.random() * 5) + 4;
 
-  addLog(`You hit ${currentEnemy.name} for ${damage} damage.`);
+  currentEnemy.health -= damage;
+
+  addLog(
+    `You dealt ${damage} damage to ${currentEnemy.name}.`
+  );
 
   if (currentEnemy.health <= 0) {
     defeatEnemy();
@@ -306,16 +378,25 @@ function attack() {
     return;
   }
 
-  enemyCounterattack();
+  enemyAttack();
+
   renderGame();
 }
 
-function enemyCounterattack() {
-  const damage = Math.floor(Math.random() * 3) + currentEnemy.damage;
+function enemyAttack() {
+  const damage =
+    currentEnemy.damage +
+    Math.floor(Math.random() * 3);
 
-  player.health = Math.max(0, player.health - damage);
+  player.health -= damage;
 
-  addLog(`${currentEnemy.name} strikes you for ${damage} damage.`);
+  if (player.health < 0) {
+    player.health = 0;
+  }
+
+  addLog(
+    `${currentEnemy.name} hit you for ${damage} damage.`
+  );
 
   if (player.health <= 0) {
     endGame(false);
@@ -323,109 +404,158 @@ function enemyCounterattack() {
 }
 
 function defeatEnemy() {
-  const defeated = currentEnemy;
-  player.gold += defeated.gold;
-
-  updateScene(
-    defeated.isBoss ? "🏆" : "⚔️",
-    defeated.isBoss ? "VICTORY" : "ENEMY DEFEATED",
-    defeated.isBoss ? "The dungeon is yours!" : `${defeated.name} defeated!`,
-    defeated.isBoss
-      ? `You defeated the Overlord, collected ${defeated.gold} gold, and conquered the dungeon.`
-      : `You earned ${defeated.gold} gold. Catch your breath before continuing.`
-  );
+  player.gold += currentEnemy.gold;
 
   addLog(
-    `You defeated ${defeated.name} and earned ${defeated.gold} gold.`
+    `You defeated ${currentEnemy.name} and gained ${currentEnemy.gold} gold.`
   );
+
+  updateScene(
+    currentEnemy.isBoss
+      ? "🏆"
+      : "⚔️",
+    currentEnemy.isBoss
+      ? "VICTORY"
+      : "DEFEATED",
+    currentEnemy.isBoss
+      ? "Dungeon Conquered!"
+      : `${currentEnemy.name} defeated!`,
+    currentEnemy.isBoss
+      ? "The dungeon is yours."
+      : "The path is clear."
+  );
+
+  const bossDefeated =
+    currentEnemy.isBoss;
 
   currentEnemy = null;
 
-  if (defeated.isBoss) {
+  if (bossDefeated) {
     endGame(true);
   }
 }
 
-// ===== Items and retreat =====
+// ===== Potions =====
 function usePotion() {
-  if (gameOver || player.potions <= 0) return;
+  if (gameOver) return;
 
-  if (player.health === MAX_HEALTH) {
-    addLog("You're already at full health. Save that potion!");
-    renderGame();
+  if (player.potions <= 0) {
+    addLog("No potions left.");
     return;
   }
 
-  const previousHealth = player.health;
+  if (player.health >= MAX_HEALTH) {
+    addLog(
+      "You already have full health."
+    );
+    return;
+  }
+
+  player.potions--;
+
+  const oldHealth =
+    player.health;
 
   player.health = Math.min(
     MAX_HEALTH,
     player.health + POTION_HEAL
   );
 
-  const healed = player.health - previousHealth;
-  player.potions--;
+  const healed =
+    player.health - oldHealth;
 
-  addLog(`You used a potion and restored ${healed} health.`);
+  addLog(
+    `You restored ${healed} health.`
+  );
+
+  updateScene(
+    "🧪",
+    "HEALING",
+    "Potion Used",
+    `You recovered ${healed} health.`
+  );
 
   if (currentEnemy) {
-    enemyCounterattack();
-  } else {
-    updateScene(
-      "🧪",
-      "ITEM USED",
-      "A little recovery.",
-      `You restored ${healed} health. Stay alert as you continue exploring.`
-    );
+    enemyAttack();
   }
 
   renderGame();
 }
 
+// ===== Retreat =====
 function retreat() {
-  if (gameOver || !currentEnemy || currentEnemy.isBoss) return;
+  if (
+    !currentEnemy ||
+    currentEnemy.isBoss ||
+    gameOver
+  ) {
+    return;
+  }
 
-  const escapedEnemy = currentEnemy.name;
-  currentEnemy = null;
+  addLog(
+    `You escaped from ${currentEnemy.name}.`
+  );
 
   updateScene(
     "💨",
-    "TACTICAL RETREAT",
+    "RETREAT",
     "You escaped!",
-    `You slipped away from ${escapedEnemy}. You can continue exploring, but the dungeon is still dangerous.`
+    "The monster remains somewhere in the dungeon."
   );
 
-  addLog(`You retreated from ${escapedEnemy}.`);
+  currentEnemy = null;
+
   renderGame();
 }
 
-// ===== End of game =====
-function endGame(didWin) {
+// ===== End Game =====
+function endGame(win) {
   gameOver = true;
-  victory = didWin;
+  victory = win;
 
-  if (didWin) {
-    addLog(`Dungeon conquered! Final gold: ${player.gold}.`);
+  if (win) {
+    addLog(
+      `Victory! Final gold: ${player.gold}.`
+    );
   } else {
     updateScene(
       "💀",
       "GAME OVER",
-      "Your adventure ends here.",
-      `You reached room ${player.room} and collected ${player.gold} gold. The dungeon claims another adventurer.`
+      "You have fallen.",
+      `Final Gold: ${player.gold}`
     );
 
-    addLog("You ran out of health. The dungeon wins this time.");
+    addLog("Game Over.");
   }
 
   renderGame();
 }
 
-// ===== Button events =====
-elements.exploreButton.addEventListener("click", explore);
-elements.attackButton.addEventListener("click", attack);
-elements.potionButton.addEventListener("click", usePotion);
-elements.fleeButton.addEventListener("click", retreat);
-elements.restartButton.addEventListener("click", startGame);
+// ===== Events =====
+elements.exploreButton.addEventListener(
+  "click",
+  explore
+);
 
-// Start the game when the page loads.
-startGame();
+elements.attackButton.addEventListener(
+  "click",
+  attack
+);
+
+elements.potionButton.addEventListener(
+  "click",
+  usePotion
+);
+
+elements.fleeButton.addEventListener(
+  "click",
+  retreat
+);
+
+elements.restartButton.addEventListener(
+  "click",
+  startGame
+);
+
+// ===== Start =====
+startGame();.
