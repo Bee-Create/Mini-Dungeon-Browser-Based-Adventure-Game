@@ -1,4 +1,4 @@
-#🗡️ Mini Dungeon — Game Rules
+<h1>🗡️ Mini Dungeon — Game Rules</h1>
 
 Welcome, adventurer! Mini Dungeon is a small, browser-based fantasy adventure where you explore a mysterious dungeon, battle monsters, collect treasure, and face a final boss.
 <br>
