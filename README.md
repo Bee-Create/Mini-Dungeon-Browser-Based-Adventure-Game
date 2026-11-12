@@ -9,6 +9,7 @@ The project demonstrates practical front-end development concepts, including DOM
 Built as a hands-on JavaScript project, Mini Dungeon combines game mechanics with responsive design to create an engaging experience while exploring the fundamentals of interactive web application development.<br>
 <br>
 <b>Features:</b><br>
+<br>
 - Explore a multi-room dungeon with randomized encounters.<br>
 - Battle enemies using interactive combat controls.<br>
 - Track player health, gold, potions, and collected treasure.<br>
